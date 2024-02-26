@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask,request,jsonify
 import pathlib
 import textwrap
 from flask_cors import CORS
@@ -25,30 +25,32 @@ model = genai.GenerativeModel('gemini-1.0-pro')
 
 # paragraph = "India, a vibrant tapestry of culture and diversity, captivates with its rich history and dynamic present. Nestled in South Asia, it spans awe-inspiring landscapes from the majestic Himalayas to the sun-kissed beaches of Goa. Boasting a population that surpasses a billion, India is a melting pot of languages, religions, and traditions, harmoniously coexisting. Its ancient heritage, reflected in landmarks like the Taj Mahal, harmonizes with the hustle of modern cities like Mumbai and Bangalore. The country's cuisine is a sensory explosion, with spices dancing in every dish. India's influence extends globally, from Bollywood's cinematic allure to its prowess in technology."
 json_result= """
-"id":1,
-"result":[{
-"relevance":0.00,
-"grammar":0.00,
-"feedback":"enter feedback max 15 words"
-}]
-}
+\"{\"result\":\"{\"
+\"relevance\":0.00,
+\"grammar\":0.00,
+\"feedback\":\"enter feedback max 15 words\",
+\"}\"}\"
 """
 # keywords="India,rich culture"
 
 def generateResponse(paragraph,keywords):
-   prompt = f"can you evaluate this \"{paragraph}\" and generate a grammar and relevancy score percentage , the paragraph's keywords are \"{keywords}\"'. Generate results in this format \"{json_result}\" "
+   prompt = f"can you evaluate this \"{paragraph}\" and generate a grammar and relevancy score percentage , the paragraph's keywords are \"{keywords}\"'. Generate results strictly in this format \"{json_result}\" "
    response = model.generate_content(prompt)
    print(response.text)
-   return response
+   return response.text
 
 @app.route("/postResults", methods=['POST'])
 def postResults():
-    # print("hi",request.get_json())
     req=json.loads(request.data)
     paragraph=req['paragraph']
     keywords=req['keywords']
     res=generateResponse(paragraph,keywords)
-    return res.text,200
+    print(jsonify(res))
+    return jsonify(res),200
+
+@app.route("/")
+def healthCheck():
+   return ("<h1>Final year backend</h1>")
 
 if __name__ == '__main__':
     app.run(debug=True)
