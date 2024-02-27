@@ -4,13 +4,13 @@ import textwrap
 from flask_cors import CORS
 import google.generativeai as genai
 
-from IPython.display import display
-from IPython.display import Markdown
+# from IPython.display import display
+# from IPython.display import Markdown
 import json
 
-def to_markdown(text):
-  text = text.replace('•', '  *')
-  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+# def to_markdown(text):
+#   text = text.replace('•', '  *')
+#   return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
 
 app = Flask(__name__)
 CORS(app)
@@ -31,10 +31,17 @@ json_result= """
 \"feedback\":\"enter feedback max 15 words\",
 \"}\"}\"
 """
+json_r={
+    "result":{
+    "relevance":"20.00",
+    "grammar":"50.00",
+    "feedback":"enter feedback of max 10 words."
+    }
+}
 # keywords="India,rich culture"
 
 def generateResponse(paragraph,keywords):
-   prompt = f"can you evaluate this \"{paragraph}\" and generate a grammar and relevancy score percentage , the paragraph's keywords are \"{keywords}\"'. Generate results strictly in this format \"{json_result}\" "
+   prompt = f"can you evaluate this \"{paragraph}\" and generate a grammar and relevancy score percentage , the paragraph's keywords are \"{keywords}\"'.  Generate results strictly in this format \"{json_result}\" "
    response = model.generate_content(prompt)
    print(response.text)
    return response.text
